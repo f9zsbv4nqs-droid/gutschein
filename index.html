@@ -69,6 +69,12 @@
             background: #ffd479;
             color: #1a2a33;
             font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         .question {
@@ -105,6 +111,7 @@
         .footer {
             margin-top: 30px;
             font-size: 1.1rem;
+            opacity: 0.9;
         }
 
         .confetti {
@@ -139,15 +146,15 @@
 <div class="container">
     <div class="card">
 
-        <!-- Bild -->
+        <!-- Bild erscheint nach Rätsel -->
         <img src="bild.jpeg" alt="Reise-Gutschein" class="image" id="voucherImage">
 
         <div class="content">
 
             <!-- RÄTSEL -->
             <div id="riddle">
-                <h1>🧠 Reise-Rätsel</h1>
-                <p>Löse diese 3 Hauptstädte:</p>
+                <h1>🧠 Geburtstagsrätsel</h1>
+                <p>Löse diese 3 kniffligen Hauptstädte,<br>um den Gutschein freizuschalten:</p>
 
                 <div class="question">
                     🇧🇫 Hauptstadt von Burkina Faso?<br>
@@ -211,7 +218,11 @@ function checkAnswers() {
     const q2 = normalize(q2Input.value);
     const q3 = normalize(q3Input.value);
 
-    if (q1 === "ouagadougou" && q2 === "bandar seri begawan" && q3 === "funafuti") {
+    if (
+        q1 === "ouagadougou" &&
+        q2 === "bandar seri begawan" &&
+        q3 === "funafuti"
+    ) {
         riddle.style.display = "none";
         voucherImage.style.display = "block";
         unlock.style.display = "block";
@@ -228,16 +239,17 @@ function showVoucher() {
 
 function launchConfetti() {
     for (let i = 0; i < 120; i++) {
-        const c = document.createElement("div");
-        c.className = "confetti";
-        c.style.left = Math.random() * 100 + "vw";
-        c.style.backgroundColor = `hsl(${Math.random()*360},80%,60%)`;
-        document.body.appendChild(c);
-        setTimeout(() => c.remove(), 4000);
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor =
+            `hsl(${Math.random() * 360}, 80%, 60%)`;
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 4000);
     }
 }
 
-// Kurzschreibweise
+// Abkürzungen
 const q1Input = document.getElementById("q1");
 const q2Input = document.getElementById("q2");
 const q3Input = document.getElementById("q3");
