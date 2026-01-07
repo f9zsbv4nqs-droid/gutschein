@@ -11,6 +11,7 @@
             font-family: "Segoe UI", Arial, sans-serif;
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: #ffffff;
+            animation: fadeIn 1.2s ease-in;
         }
 
         .container {
@@ -24,21 +25,20 @@
             border-radius: 20px;
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            animation: slideUp 1.2s ease-out;
         }
 
-        /* Bild – komplett sichtbar */
+        /* Bild – 100 % vollständig sichtbar */
         .image {
             width: 100%;
-            max-height: 420px;
-            object-fit: contain;
-            background-color: #1a2a33;
+            height: auto;
             display: block;
-            margin: 0 auto;
         }
 
         .content {
             padding: 40px;
             text-align: center;
+            animation: fadeIn 1.6s ease-in;
         }
 
         h1 {
@@ -58,6 +58,7 @@
             padding: 30px;
             margin: 30px 0;
             background: rgba(0,0,0,0.25);
+            animation: popIn 1.4s ease;
         }
 
         .voucher-box p {
@@ -78,13 +79,37 @@
             opacity: 0.9;
         }
 
+        /* Animationen */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 2.2rem;
-            }
-
-            .image {
-                max-height: 280px;
             }
         }
     </style>
@@ -94,8 +119,8 @@
 <div class="container">
     <div class="card">
 
-        <!-- Bild -->
-        <img src="bild.jpeg" alt="Reise Gutschein Bild" class="image">
+        <!-- Bild: komplett sichtbar, nichts abgeschnitten -->
+        <img src="bild.jpeg" alt="Reise-Gutschein" class="image">
 
         <div class="content">
             <h1>🎉 Alles Gute zum 50. Geburtstag! 🎉</h1>
