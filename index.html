@@ -15,7 +15,7 @@ body {
 .container {
     max-width: 900px;
     margin: auto;
-    padding: 40px 20px;
+    padding: 20px;
 }
 .card {
     background: rgba(255,255,255,0.08);
@@ -24,20 +24,21 @@ body {
     overflow: hidden;
 }
 .content {
-    padding: 40px;
+    padding: 20px;
     text-align: center;
 }
 input {
     padding: 10px;
     border-radius: 8px;
     border: none;
-    width: 220px;
+    width: 90%;
+    max-width: 220px;
     font-size: 1rem;
 }
 button {
-    margin-top: 25px;
-    padding: 14px 32px;
-    font-size: 1.1rem;
+    margin-top: 20px;
+    padding: 12px 28px;
+    font-size: 1rem;
     border: none;
     border-radius: 30px;
     cursor: pointer;
@@ -46,17 +47,17 @@ button {
     font-weight: bold;
 }
 .hidden { display: none; }
-.error { color: #ffb3b3; margin-top: 15px; }
+.error { color: #ffb3b3; margin-top: 10px; }
 
 .voucher-box {
     border: 2px dashed #ffffffaa;
     border-radius: 15px;
-    padding: 30px;
-    margin: 30px 0;
+    padding: 20px;
+    margin: 20px 0;
     background: rgba(0,0,0,0.25);
 }
 .highlight {
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: #ffd479;
     font-weight: bold;
 }
@@ -72,26 +73,40 @@ button {
     to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
-/* Schachbrett */
+/* Schachbrett responsive */
 #chessboard {
     display: grid;
-    grid-template-columns: repeat(8, 50px);
-    grid-template-rows: repeat(8, 50px);
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
     gap: 0;
-    margin: 20px auto;
+    margin: 15px auto;
+    max-width: 90vw;
 }
 .square {
-    width: 50px;
-    height: 50px;
+    width: 100%;
+    padding-top: 100%;
+    position: relative;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size: 32px;
+    font-size: calc(12px + 3vw);
     cursor: pointer;
 }
 .square.light { background-color: #eee; color: #000; }
 .square.dark { background-color: #555; color: #fff; }
+.square span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 .selected { outline: 3px solid yellow; }
+
+/* Textanpassung auf kleineren Screens */
+@media (max-width: 500px) {
+    .highlight { font-size: 1.5rem; }
+    button { font-size: 0.95rem; padding: 10px 24px; }
+}
 </style>
 </head>
 
@@ -117,7 +132,7 @@ button {
 <!-- SCHACHBRETT -->
 <div id="chess" class="hidden">
     <h1>♟️ Schachrätsel</h1>
-    <p><strong>Weiß am Zug – Matt in 1!</strong></p>
+    <p><strong>Weiß am Zug – Matt in 1! Ziehe die Figur</strong></p>
     <div id="chessboard"></div>
     <div class="error hidden" id="chessError">❌ Kein Schachmatt!</div>
 </div>
@@ -159,8 +174,6 @@ function checkRiddle(){
 
 // ========= Schach =========
 let board = [];
-let selectedPiece = null;
-
 function initChess(){
     const chessboard = document.getElementById("chessboard");
     chessboard.innerHTML="";
@@ -175,48 +188,44 @@ function initChess(){
         ['','','','','','','',''],
         ['','','','','','','','']
     ];
-    // Figuren: Weiß König e1, Dame h5; Schwarz König g8
-    initial[7][4]='♔'; // e1
-    initial[3][7]='♕'; // h5
-    initial[0][6]='♚'; // g8
+    initial[7][4]='♔'; // König e1
+    initial[3][7]='♕'; // Dame h5
+    initial[0][6]='♚'; // Schwarz g8
     for(let r=0;r<8;r++){
         for(let c=0;c<8;c++){
-            const sq = document.createElement("div");
+            const sq=document.createElement("div");
             sq.className="square "+((r+c)%2==0?"light":"dark");
             sq.dataset.row=r;
             sq.dataset.col=c;
-            sq.textContent = initial[r][c];
-            sq.onclick=clickSquare;
+            const span=document.createElement("span");
+            span.textContent=initial[r][c];
+            span.draggable = (span.textContent==='♔'||span.textContent==='♕');
+            span.addEventListener('dragstart', dragStart);
+            sq.appendChild(span);
+            sq.addEventListener('dragover', dragOver);
+            sq.addEventListener('drop', drop);
             chessboard.appendChild(sq);
             board.push(sq);
         }
     }
 }
-function clickSquare(e){
-    const sq=e.currentTarget;
-    if(selectedPiece){
-        // Move selected piece
-        if(selectedPiece!==sq){
-            // nur Dame oder König bewegen
-            const piece = selectedPiece.textContent;
-            if(piece==='♔' || piece==='♕'){
-                sq.textContent=piece;
-                selectedPiece.textContent='';
-                selectedPiece.classList.remove('selected');
-                selectedPiece=null;
-                checkMate();
-            } else { selectedPiece.classList.remove('selected'); selectedPiece=null; }
-        }
-    } else if(sq.textContent==='♔' || sq.textContent==='♕'){
-        selectedPiece = sq;
-        sq.classList.add('selected');
+let draggedPiece = null;
+function dragStart(e){ draggedPiece = e.target; }
+function dragOver(e){ e.preventDefault(); }
+function drop(e){
+    e.preventDefault();
+    const targetSpan = e.currentTarget.querySelector('span');
+    if(targetSpan && (targetSpan.textContent==='' || targetSpan.textContent==='♚')){
+        targetSpan.textContent = draggedPiece.textContent;
+        draggedPiece.textContent = '';
+        checkMate();
     }
 }
 function checkMate(){
-    // Richtiger Zug: Dame h5 -> h7 (Position [1][7] im Array)
     let correct=false;
     board.forEach(sq=>{
-        if(sq.textContent==='♕' && sq.dataset.row=='1' && sq.dataset.col=='7'){ correct=true; }
+        const span = sq.querySelector('span');
+        if(span.textContent==='♕' && sq.dataset.row=='1' && sq.dataset.col=='7'){ correct=true; }
     });
     if(correct){
         chess.classList.add('hidden');
