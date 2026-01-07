@@ -1,263 +1,262 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <title>Gutschein zum 50. Geburtstag</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Geburtstagsrätsel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-            color: #ffffff;
-            overflow-x: hidden;
-        }
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+}
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 40px 20px;
+}
+.card {
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    overflow: hidden;
+}
+.content {
+    padding: 40px;
+    text-align: center;
+}
+input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    width: 220px;
+    font-size: 1rem;
+}
+button {
+    margin-top: 25px;
+    padding: 14px 32px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    background: #ffd479;
+    color: #1a2a33;
+    font-weight: bold;
+}
+.hidden { display: none; }
+.error { color: #ffb3b3; margin-top: 15px; }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+.voucher-box {
+    border: 2px dashed #ffffffaa;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 30px 0;
+    background: rgba(0,0,0,0.25);
+}
+.highlight {
+    font-size: 2rem;
+    color: #ffd479;
+    font-weight: bold;
+}
+.confetti {
+    position: fixed;
+    top: -10px;
+    width: 10px;
+    height: 10px;
+    animation: fall 3s linear forwards;
+    z-index: 9999;
+}
+@keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
 
-        .card {
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            animation: slideUp 1.2s ease-out;
-        }
-
-        .image {
-            width: 100%;
-            height: auto;
-            display: none;
-        }
-
-        .content {
-            padding: 40px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 2.6rem;
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            font-weight: 300;
-            color: #d0e8ff;
-        }
-
-        input {
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            width: 230px;
-            max-width: 90%;
-            font-size: 1rem;
-            margin-top: 8px;
-        }
-
-        button {
-            margin-top: 25px;
-            padding: 14px 32px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            background: #ffd479;
-            color: #1a2a33;
-            font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-        }
-
-        .question {
-            margin: 18px 0;
-        }
-
-        .error {
-            color: #ffb3b3;
-            margin-top: 15px;
-            display: none;
-        }
-
-        #unlock,
-        #voucher {
-            display: none;
-            animation: fadeIn 1.2s ease-in;
-        }
-
-        .voucher-box {
-            border: 2px dashed #ffffffaa;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 30px 0;
-            background: rgba(0,0,0,0.25);
-        }
-
-        .highlight {
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 20px 0;
-            color: #ffd479;
-        }
-
-        .footer {
-            margin-top: 30px;
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .confetti {
-            position: fixed;
-            top: -10px;
-            width: 10px;
-            height: 10px;
-            animation: fall 3s linear forwards;
-            z-index: 9999;
-        }
-
-        @keyframes fall {
-            to {
-                transform: translateY(110vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-    </style>
+/* Schachbrett */
+#chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, 50px);
+    grid-template-rows: repeat(8, 50px);
+    gap: 0;
+    margin: 20px auto;
+}
+.square {
+    width: 50px;
+    height: 50px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size: 32px;
+    cursor: pointer;
+}
+.square.light { background-color: #eee; color: #000; }
+.square.dark { background-color: #555; color: #fff; }
+.selected { outline: 3px solid yellow; }
+</style>
 </head>
+
 <body>
-
 <div class="container">
-    <div class="card">
+<div class="card">
 
-        <!-- Bild erscheint nach Rätsel -->
-        <img src="bild.jpeg" alt="Reise-Gutschein" class="image" id="voucherImage">
+<div class="content">
 
-        <div class="content">
+<!-- RÄTSEL -->
+<div id="riddle">
+    <h1>🧠 Geburtstagsrätsel</h1>
+    <p>🇧🇫 Hauptstadt von Burkina Faso?</p>
+    <input id="q1"><br><br>
+    <p>🇧🇳 Hauptstadt von Brunei?</p>
+    <input id="q2"><br><br>
+    <p>🇹🇻 Hauptstadt von Tuvalu?</p>
+    <input id="q3"><br>
+    <button onclick="checkRiddle()">Antworten prüfen</button>
+    <div class="error hidden" id="riddleError">❌ Leider falsch</div>
+</div>
 
-            <!-- RÄTSEL -->
-            <div id="riddle">
-                <h1>🧠 Geburtstagsrätsel</h1>
-                <p>Löse diese 3 kniffligen Hauptstädte,<br>um den Gutschein freizuschalten:</p>
+<!-- SCHACHBRETT -->
+<div id="chess" class="hidden">
+    <h1>♟️ Schachrätsel</h1>
+    <p><strong>Weiß am Zug – Matt in 1!</strong></p>
+    <div id="chessboard"></div>
+    <div class="error hidden" id="chessError">❌ Kein Schachmatt!</div>
+</div>
 
-                <div class="question">
-                    🇧🇫 Hauptstadt von Burkina Faso?<br>
-                    <input id="q1">
-                </div>
+<!-- UNLOCK -->
+<div id="unlock" class="hidden">
+    <button onclick="showVoucher()">🎁 Gutschein einlösen</button>
+</div>
 
-                <div class="question">
-                    🇧🇳 Hauptstadt von Brunei?<br>
-                    <input id="q2">
-                </div>
-
-                <div class="question">
-                    🇹🇻 Hauptstadt von Tuvalu?<br>
-                    <input id="q3">
-                </div>
-
-                <button onclick="checkAnswers()">Antworten prüfen</button>
-                <div id="error" class="error">❌ Leider nicht ganz – nochmal versuchen!</div>
-            </div>
-
-            <!-- NUR BUTTON -->
-            <div id="unlock">
-                <button onclick="showVoucher()">🎁 Gutschein einlösen</button>
-            </div>
-
-            <!-- GUTSCHEIN -->
-            <div id="voucher">
-                <h1>🎉 Alles Gute zum 50. Geburtstag! 🎉</h1>
-                <h2>Lieber Papa</h2>
-
-                <div class="voucher-box">
-                    <p>Zu deinem Geburtstag bekommst du von uns:</p>
-
-                    <div class="highlight">
-                        🧳 EINEN NEUEN REISEKOFFER 🧳
-                    </div>
-
-                    <p>
-                        Für viele neue Reisen,<br>
-                        große Abenteuer und unvergessliche Erinnerungen.
-                    </p>
-                </div>
-
-                <div class="footer">
-                    Mit ganz viel Liebe 💙<br>
-                    <strong>Jonas, Emilia, Emely und Moritz</strong>
-                </div>
-            </div>
-
-        </div>
+<!-- GUTSCHEIN -->
+<div id="voucher" class="hidden">
+    <h1>🎉 Alles Gute zum 50. Geburtstag! 🎉</h1>
+    <h2>Lieber Papa</h2>
+    <div class="voucher-box">
+        <p>Zu deinem Geburtstag bekommst du von uns:</p>
+        <div class="highlight">🧳 EINEN NEUEN REISEKOFFER 🧳</div>
+        <p>Für viele neue Abenteuer.</p>
     </div>
+    <div id="seal" class="highlight hidden">🎖️ Papa ist Schachmeister!</div>
+    <p>Mit ganz viel Liebe 💙<br><strong>Jonas, Emilia, Emely und Moritz</strong></p>
+</div>
+
+</div>
+</div>
 </div>
 
 <script>
-function normalize(text) {
-    return text.toLowerCase().replace(/\s+/g, " ").trim();
+// ========= Rätsel =========
+function n(t){return t.toLowerCase().trim();}
+function checkRiddle(){
+    if(n(q1.value)=="ouagadougou" &&
+       n(q2.value)=="bandar seri begawan" &&
+       n(q3.value)=="funafuti"){
+        riddle.classList.add("hidden");
+        initChess();
+        chess.classList.remove("hidden");
+    } else { riddleError.classList.remove("hidden"); }
 }
 
-function checkAnswers() {
-    const q1 = normalize(q1Input.value);
-    const q2 = normalize(q2Input.value);
-    const q3 = normalize(q3Input.value);
+// ========= Schach =========
+let board = [];
+let selectedPiece = null;
 
-    if (
-        q1 === "ouagadougou" &&
-        q2 === "bandar seri begawan" &&
-        q3 === "funafuti"
-    ) {
-        riddle.style.display = "none";
-        voucherImage.style.display = "block";
-        unlock.style.display = "block";
+function initChess(){
+    const chessboard = document.getElementById("chessboard");
+    chessboard.innerHTML="";
+    board = [];
+    const initial = [
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','',''],
+        ['','','','','','','','']
+    ];
+    // Figuren: Weiß König e1, Dame h5; Schwarz König g8
+    initial[7][4]='♔'; // e1
+    initial[3][7]='♕'; // h5
+    initial[0][6]='♚'; // g8
+    for(let r=0;r<8;r++){
+        for(let c=0;c<8;c++){
+            const sq = document.createElement("div");
+            sq.className="square "+((r+c)%2==0?"light":"dark");
+            sq.dataset.row=r;
+            sq.dataset.col=c;
+            sq.textContent = initial[r][c];
+            sq.onclick=clickSquare;
+            chessboard.appendChild(sq);
+            board.push(sq);
+        }
+    }
+}
+function clickSquare(e){
+    const sq=e.currentTarget;
+    if(selectedPiece){
+        // Move selected piece
+        if(selectedPiece!==sq){
+            // nur Dame oder König bewegen
+            const piece = selectedPiece.textContent;
+            if(piece==='♔' || piece==='♕'){
+                sq.textContent=piece;
+                selectedPiece.textContent='';
+                selectedPiece.classList.remove('selected');
+                selectedPiece=null;
+                checkMate();
+            } else { selectedPiece.classList.remove('selected'); selectedPiece=null; }
+        }
+    } else if(sq.textContent==='♔' || sq.textContent==='♕'){
+        selectedPiece = sq;
+        sq.classList.add('selected');
+    }
+}
+function checkMate(){
+    // Richtiger Zug: Dame h5 -> h7 (Position [1][7] im Array)
+    let correct=false;
+    board.forEach(sq=>{
+        if(sq.textContent==='♕' && sq.dataset.row=='1' && sq.dataset.col=='7'){ correct=true; }
+    });
+    if(correct){
+        chess.classList.add('hidden');
+        unlock.classList.remove('hidden');
     } else {
-        error.style.display = "block";
+        chessError.classList.remove('hidden');
     }
 }
 
-function showVoucher() {
-    unlock.style.display = "none";
-    voucher.style.display = "block";
+// ========= Gutschein =========
+function showVoucher(){
+    unlock.classList.add('hidden');
+    voucher.classList.remove('hidden');
+    seal.classList.remove('hidden');
     launchConfetti();
 }
 
-function launchConfetti() {
-    for (let i = 0; i < 120; i++) {
-        const confetti = document.createElement("div");
-        confetti.className = "confetti";
-        confetti.style.left = Math.random() * 100 + "vw";
-        confetti.style.backgroundColor =
-            `hsl(${Math.random() * 360}, 80%, 60%)`;
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 4000);
+// ========= Konfetti =========
+function launchConfetti(){
+    for(let i=0;i<120;i++){
+        const c=document.createElement("div");
+        c.className="confetti";
+        c.style.left=Math.random()*100+"vw";
+        c.style.backgroundColor=`hsl(${Math.random()*360},80%,60%)`;
+        document.body.appendChild(c);
+        setTimeout(()=>c.remove(),4000);
     }
 }
 
-// Abkürzungen
-const q1Input = document.getElementById("q1");
-const q2Input = document.getElementById("q2");
-const q3Input = document.getElementById("q3");
-const riddle = document.getElementById("riddle");
-const unlock = document.getElementById("unlock");
-const voucher = document.getElementById("voucher");
-const voucherImage = document.getElementById("voucherImage");
-const error = document.getElementById("error");
+// ========= Elemente =========
+const q1=document.getElementById("q1");
+const q2=document.getElementById("q2");
+const q3=document.getElementById("q3");
+const riddle=document.getElementById("riddle");
+const riddleError=document.getElementById("riddleError");
+const chess=document.getElementById("chess");
+const chessError=document.getElementById("chessError");
+const unlock=document.getElementById("unlock");
+const voucher=document.getElementById("voucher");
+const seal=document.getElementById("seal");
 </script>
 
 </body>
