@@ -11,7 +11,7 @@
             font-family: "Segoe UI", Arial, sans-serif;
             background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
             color: #ffffff;
-            animation: fadeIn 1.2s ease-in;
+            overflow-x: hidden;
         }
 
         .container {
@@ -28,7 +28,6 @@
             animation: slideUp 1.2s ease-out;
         }
 
-        /* Bild – 100 % vollständig sichtbar */
         .image {
             width: 100%;
             height: auto;
@@ -38,18 +37,59 @@
         .content {
             padding: 40px;
             text-align: center;
-            animation: fadeIn 1.6s ease-in;
         }
 
         h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
+            font-size: 2.6rem;
+            margin-bottom: 20px;
         }
 
         h2 {
             font-weight: 300;
-            margin-bottom: 30px;
             color: #d0e8ff;
+        }
+
+        input {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            width: 230px;
+            max-width: 90%;
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            background: #ffd479;
+            color: #1a2a33;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        .question {
+            margin: 18px 0;
+        }
+
+        .error {
+            color: #ffb3b3;
+            margin-top: 15px;
+            display: none;
+        }
+
+        #voucher {
+            display: none;
+            animation: fadeIn 1.5s ease-in;
         }
 
         .voucher-box {
@@ -58,12 +98,6 @@
             padding: 30px;
             margin: 30px 0;
             background: rgba(0,0,0,0.25);
-            animation: popIn 1.4s ease;
-        }
-
-        .voucher-box p {
-            font-size: 1.3rem;
-            line-height: 1.6;
         }
 
         .highlight {
@@ -79,38 +113,32 @@
             opacity: 0.9;
         }
 
-        /* Animationen */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
+        /* Konfetti */
+        .confetti {
+            position: fixed;
+            top: -10px;
+            width: 10px;
+            height: 10px;
+            background-color: red;
+            animation: fall 3s linear forwards;
+            z-index: 9999;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes popIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        @media (max-width: 600px) {
-            h1 {
-                font-size: 2.2rem;
-            }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -119,37 +147,100 @@
 <div class="container">
     <div class="card">
 
-        <!-- Bild: komplett sichtbar, nichts abgeschnitten -->
         <img src="bild.jpeg" alt="Reise-Gutschein" class="image">
 
         <div class="content">
-            <h1>🎉 Alles Gute zum 50. Geburtstag! 🎉</h1>
-            <h2>Lieber Papa</h2>
 
-            <div class="voucher-box">
-                <p>
-                    Zu deinem 50. Geburtstag bekommst du von uns<br>
-                    einen Gutschein für dein nächstes großes Abenteuer:
-                </p>
+            <!-- RÄTSEL -->
+            <div id="riddle">
+                <h1>🧠 Reise-Rätsel</h1>
+                <p>Löse diese 3 kniffligen Hauptstädte,<br>um den Gutschein freizuschalten:</p>
 
-                <div class="highlight">
-                    🧳 EINEN NEUEN REISEKOFFER 🧳
+                <div class="question">
+                    🇧🇫 Hauptstadt von Burkina Faso?<br>
+                    <input id="q1">
                 </div>
 
-                <p>
-                    Für viele weitere Reisen,<br>
-                    neue Orte und unvergessliche Erinnerungen.
-                </p>
+                <div class="question">
+                    🇧🇳 Hauptstadt von Brunei?<br>
+                    <input id="q2">
+                </div>
+
+                <div class="question">
+                    🇹🇻 Hauptstadt von Tuvalu?<br>
+                    <input id="q3">
+                </div>
+
+                <button onclick="checkAnswers()">Antworten prüfen</button>
+                <div id="error" class="error">❌ Leider nicht ganz – nochmal versuchen!</div>
             </div>
 
-            <div class="footer">
-                Mit ganz viel Liebe 💙<br>
-                <strong>Jonas, Emilia, Emely und Moritz</strong>
+            <!-- GUTSCHEIN -->
+            <div id="voucher">
+                <h1>🎉 Alles Gute zum 50. Geburtstag! 🎉</h1>
+                <h2>Lieber Papa</h2>
+
+                <div class="voucher-box">
+                    <p>Zu deinem Geburtstag bekommst du von uns:</p>
+
+                    <div class="highlight">
+                        🧳 EINEN NEUEN REISEKOFFER 🧳
+                    </div>
+
+                    <p>
+                        Für viele neue Reisen,<br>
+                        große Abenteuer und unvergessliche Erinnerungen.
+                    </p>
+                </div>
+
+                <button onclick="launchConfetti()">🎁 Gutschein einlösen</button>
+
+                <div class="footer">
+                    Mit ganz viel Liebe 💙<br>
+                    <strong>Jonas, Emilia, Emely und Moritz</strong>
+                </div>
             </div>
+
         </div>
-
     </div>
 </div>
+
+<script>
+function normalize(text) {
+    return text.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+function checkAnswers() {
+    const q1 = normalize(document.getElementById("q1").value);
+    const q2 = normalize(document.getElementById("q2").value);
+    const q3 = normalize(document.getElementById("q3").value);
+
+    if (
+        q1 === "ouagadougou" &&
+        q2 === "bandar seri begawan" &&
+        q3 === "funafuti"
+    ) {
+        document.getElementById("riddle").style.display = "none";
+        document.getElementById("voucher").style.display = "block";
+    } else {
+        document.getElementById("error").style.display = "block";
+    }
+}
+
+function launchConfetti() {
+    for (let i = 0; i < 120; i++) {
+        const confetti = document.createElement("div");
+        confetti.classList.add("confetti");
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.backgroundColor = 
+            `hsl(${Math.random() * 360}, 80%, 60%)`;
+        confetti.style.animationDuration = (2 + Math.random() * 2) + "s";
+        document.body.appendChild(confetti);
+
+        setTimeout(() => confetti.remove(), 4000);
+    }
+}
+</script>
 
 </body>
 </html>
