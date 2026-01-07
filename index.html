@@ -26,6 +26,8 @@ button { margin-top:20px; padding:12px 28px; font-size:1rem; border:none; border
 .square span { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
 .selected { outline:3px solid yellow; }
 
+img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
+
 @media(max-width:500px){ .highlight{font-size:1.5rem;} button{font-size:0.95rem;padding:10px 24px;} }
 </style>
 </head>
@@ -59,12 +61,12 @@ button { margin-top:20px; padding:12px 28px; font-size:1rem; border:none; border
 <div id="voucher" class="hidden">
 <h1>🎉 Alles Gute zum 50. Geburtstag! 🎉</h1>
 <h2>Lieber Papa</h2>
+<img src="bild.jpeg" alt="Reise-Gutschein" class="voucher-image">
 <div class="voucher-box">
 <p>Zu deinem Geburtstag bekommst du von uns:</p>
 <div class="highlight">🧳 EINEN NEUEN REISEKOFFER 🧳</div>
-<p>Für viele neue Abenteuer.</p>
+<p>Für viele neue Abenteuer und unvergessliche Erinnerungen.</p>
 </div>
-<div id="seal" class="highlight hidden">🎖️ Papa ist Schachmeister!</div>
 <p>Mit ganz viel Liebe 💙<br><strong>Jonas, Emilia, Emely und Moritz</strong></p>
 </div>
 
@@ -130,7 +132,7 @@ else chessError.classList.remove('hidden');
 }
 
 // ===================== GUTSCHEIN =====================
-function showVoucher(){ unlock.classList.add('hidden'); voucher.classList.remove('hidden'); seal.classList.remove('hidden'); launchConfetti(); }
+function showVoucher(){ unlock.classList.add('hidden'); voucher.classList.remove('hidden'); launchConfetti(); }
 
 // ===================== KONFETTI =====================
 function launchConfetti(){ 
@@ -142,7 +144,7 @@ c.style.backgroundColor=`hsl(${Math.random()*360},80%,60%)`;
 document.body.appendChild(c);
 setTimeout(()=>c.remove(),4000);
 }}
-  
+
 // ===================== ELEMENTE =====================
 const q1=document.getElementById("q1"),
       q2=document.getElementById("q2"),
@@ -152,8 +154,7 @@ const q1=document.getElementById("q1"),
       chess=document.getElementById("chess"),
       chessError=document.getElementById("chessError"),
       unlock=document.getElementById("unlock"),
-      voucher=document.getElementById("voucher"),
-      seal=document.getElementById("seal");
+      voucher=document.getElementById("voucher");
 </script>
 </body>
 </html>
