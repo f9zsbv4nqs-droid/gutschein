@@ -30,10 +30,21 @@ button { margin-top:15px; padding:12px 28px; font-size:1rem; border:none; border
   cursor:pointer;
 }
 
-/* RICHTUNGS-SPIEL */
-#grid { display:grid; grid-template-columns:repeat(3,80px); gap:8px; justify-content:center; margin:20px auto; }
-.grid-cell { height:80px; background:rgba(255,255,255,0.15); border-radius:12px; }
-.active { background:#ffd479; }
+/* SEQUENZ-SPIEL */
+#seqGrid {
+  display:grid;
+  grid-template-columns:repeat(3,80px);
+  gap:12px;
+  justify-content:center;
+  margin:20px auto;
+}
+.seq-cell {
+  height:80px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.15);
+  cursor:pointer;
+}
+.seq-cell.active { background:#ffd479; }
 
 /* MEMORY */
 #memory { display:grid; grid-template-columns:repeat(3,90px); gap:12px; justify-content:center; margin:20px auto; }
@@ -71,18 +82,12 @@ img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 <button id="restartTTT" class="hidden" onclick="initTTT()">🔁 Nochmal spielen</button>
 </div>
 
-<!-- RICHTUNGS-SPIEL -->
-<div id="path" class="hidden">
-<h1>🧭 Der richtige Weg</h1>
-<p><strong>⬆️ ➡️ ➡️ ⬇️ ⬅️</strong></p>
-<div id="grid"></div>
-<div>
-<button onclick="move('up')">⬆️</button>
-<button onclick="move('left')">⬅️</button>
-<button onclick="move('right')">➡️</button>
-<button onclick="move('down')">⬇️</button>
-</div>
-<div class="error hidden" id="pathError">❌ Falscher Weg!</div>
+<!-- NEUES SPIEL -->
+<div id="sequenceGame" class="hidden">
+<h1>🔢 Merk dir die Reihenfolge</h1>
+<p>Merke dir die 3 Felder und klicke sie danach in der gleichen Reihenfolge.</p>
+<div id="seqGrid"></div>
+<div class="error hidden" id="seqError">❌ Falsch – versuch es nochmal!</div>
 </div>
 
 <!-- MEMORY -->
@@ -115,8 +120,10 @@ function n(t){return t.toLowerCase().trim();}
 function checkRiddle(){
 if(n(q1.value)=="tokio" && n(q2.value)=="chongqing" &&
 (n(q3.value)=="6. august 1945" || n(q3.value)=="06.08.1945")){
-riddle.classList.add("hidden"); initTTT(); game.classList.remove("hidden");
-} else riddleError.classList.remove("hidden");
+riddle.classList.add("hidden");
+initTTT();
+game.classList.remove("hidden");
+}else riddleError.classList.remove("hidden");
 }
 
 // ===================== TIC TAC TOE =====================
@@ -129,7 +136,6 @@ boardTTT=Array(9).fill("");
 gameOver=false;
 gameError.classList.add("hidden");
 restartTTT.classList.add("hidden");
-
 for(let i=0;i<9;i++){
 const c=document.createElement("div");
 c.className="cell";
@@ -139,33 +145,28 @@ ttt.appendChild(c);
 }
 
 function playerMove(i,cell){
-if(boardTTT[i] || gameOver) return;
-boardTTT[i]="X";
-cell.textContent="❌";
-
+if(boardTTT[i]||gameOver) return;
+boardTTT[i]="X"; cell.textContent="❌";
 if(checkWin("X")){
 game.classList.add("hidden");
-initPath();
-path.classList.remove("hidden");
+initSequence();
+sequenceGame.classList.remove("hidden");
 return;
 }
-
 if(boardTTT.every(v=>v)){
 gameError.textContent="Unentschieden!";
 gameError.classList.remove("hidden");
 restartTTT.classList.remove("hidden");
-gameOver=true;
-return;
+gameOver=true; return;
 }
-
 setTimeout(computerMove,400);
 }
 
 function computerMove(){
-let move=smartMove();
+let empty=boardTTT.map((v,i)=>v==""?i:null).filter(v=>v!==null);
+let move=empty[Math.floor(Math.random()*empty.length)];
 boardTTT[move]="O";
 document.querySelectorAll(".cell")[move].textContent="⭕";
-
 if(checkWin("O")){
 gameError.textContent="Computer gewinnt 😈";
 gameError.classList.remove("hidden");
@@ -173,48 +174,47 @@ restartTTT.classList.remove("hidden");
 gameOver=true;
 }
 }
-
-function smartMove(){
-let empty=boardTTT.map((v,i)=>v==""?i:null).filter(v=>v!==null);
-if(Math.random()<0.2) return empty[Math.floor(Math.random()*empty.length)];
-for(let i of empty){ boardTTT[i]="O"; if(checkWin("O")){ boardTTT[i]=""; return i;} boardTTT[i]=""; }
-for(let i of empty){ boardTTT[i]="X"; if(checkWin("X")){ boardTTT[i]=""; return i;} boardTTT[i]=""; }
-if(empty.includes(4)) return 4;
-return empty[Math.floor(Math.random()*empty.length)];
-}
-
 function checkWin(p){ return winLines.some(l=>l.every(i=>boardTTT[i]==p)); }
 
-// ===================== RICHTUNGS-SPIEL =====================
-let pos=4, moves=[], solution=["up","right","right","down","left"];
-function initPath(){
-grid.innerHTML=""; pos=4; moves=[];
+// ===================== SEQUENZ-SPIEL =====================
+let sequence=[], userSeq=[], lockSeq=true;
+function initSequence(){
+seqGrid.innerHTML="";
+sequence=[]; userSeq=[]; lockSeq=true;
+seqError.classList.add("hidden");
+
 for(let i=0;i<9;i++){
 const d=document.createElement("div");
-d.className="grid-cell";
-if(i===4) d.classList.add("active");
-grid.appendChild(d);
-}
-}
-
-function move(dir){
-moves.push(dir);
-let r=Math.floor(pos/3), c=pos%3;
-if(dir=="up")r--; if(dir=="down")r++; if(dir=="left")c--; if(dir=="right")c++;
-if(r<0||c<0||r>2||c>2) return resetPath();
-pos=r*3+c; updateGrid();
-if(moves.length===solution.length){
-JSON.stringify(moves)==JSON.stringify(solution)
-?(path.classList.add("hidden"),initMemory(),memoryGame.classList.remove("hidden"))
-:resetPath();
-}
+d.className="seq-cell";
+d.onclick=()=>clickSeq(i);
+seqGrid.appendChild(d);
 }
 
-function updateGrid(){
-[...grid.children].forEach(c=>c.classList.remove("active"));
-grid.children[pos].classList.add("active");
+while(sequence.length<3){
+let r=Math.floor(Math.random()*9);
+if(!sequence.includes(r)) sequence.push(r);
 }
-function resetPath(){ pathError.classList.remove("hidden"); initPath(); }
+
+sequence.forEach((i,idx)=>{
+setTimeout(()=>seqGrid.children[i].classList.add("active"),500+idx*700);
+setTimeout(()=>seqGrid.children[i].classList.remove("active"),900+idx*700);
+});
+setTimeout(()=>lockSeq=false,2600);
+}
+
+function clickSeq(i){
+if(lockSeq) return;
+userSeq.push(i);
+if(userSeq[userSeq.length-1]!==sequence[userSeq.length-1]){
+seqError.classList.remove("hidden");
+return initSequence();
+}
+if(userSeq.length===sequence.length){
+sequenceGame.classList.add("hidden");
+initMemory();
+memoryGame.classList.remove("hidden");
+}
+}
 
 // ===================== MEMORY =====================
 let cards=["🧳","🧳","✈️","✈️","🌍","🌍"], first=null, lock=false, matched=0;
@@ -266,14 +266,24 @@ setTimeout(()=>c.remove(),4000);
 }
 
 // ===================== ELEMENTE =====================
-const q1=document.getElementById("q1"), q2=document.getElementById("q2"), q3=document.getElementById("q3"),
-riddle=document.getElementById("riddle"), riddleError=document.getElementById("riddleError"),
-game=document.getElementById("game"), gameError=document.getElementById("gameError"),
+const q1=q2=q3=null;
+const q1e=document.getElementById("q1"),
+q2e=document.getElementById("q2"),
+q3e=document.getElementById("q3");
+const q1=q1e,q2=q2e,q3=q3e;
+
+const riddle=document.getElementById("riddle"),
+riddleError=document.getElementById("riddleError"),
+game=document.getElementById("game"),
+gameError=document.getElementById("gameError"),
 restartTTT=document.getElementById("restartTTT"),
-path=document.getElementById("path"), pathError=document.getElementById("pathError"),
-grid=document.getElementById("grid"),
-memoryGame=document.getElementById("memoryGame"), memory=document.getElementById("memory"),
-unlock=document.getElementById("unlock"), voucher=document.getElementById("voucher");
+sequenceGame=document.getElementById("sequenceGame"),
+seqGrid=document.getElementById("seqGrid"),
+seqError=document.getElementById("seqError"),
+memoryGame=document.getElementById("memoryGame"),
+memory=document.getElementById("memory"),
+unlock=document.getElementById("unlock"),
+voucher=document.getElementById("voucher");
 </script>
 
 </body>
