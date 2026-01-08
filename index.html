@@ -4,33 +4,92 @@
 <meta charset="UTF-8">
 <title>Geburtstagsrätsel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body { margin:0; font-family:"Segoe UI",Arial,sans-serif; background:linear-gradient(135deg,#0f2027,#203a43,#2c5364); color:#fff; }
+body {
+  margin:0;
+  font-family:"Segoe UI",Arial,sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  color:#fff;
+}
 .container { max-width:900px; margin:auto; padding:20px; }
-.card { background: rgba(255,255,255,0.08); border-radius:20px; box-shadow:0 20px 40px rgba(0,0,0,0.4); }
+.card {
+  background: rgba(255,255,255,0.08);
+  border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+}
 .content { padding:20px; text-align:center; }
-input { padding:10px; border-radius:8px; border:none; width:90%; max-width:260px; font-size:1rem; }
-button { margin-top:15px; padding:12px 28px; font-size:1rem; border:none; border-radius:30px; cursor:pointer; background:#ffd479; color:#1a2a33; font-weight:bold; }
+
+input {
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  width:90%;
+  max-width:260px;
+  font-size:1rem;
+}
+
+button {
+  margin-top:15px;
+  padding:12px 28px;
+  font-size:1rem;
+  border:none;
+  border-radius:30px;
+  cursor:pointer;
+  background:#ffd479;
+  color:#1a2a33;
+  font-weight:bold;
+}
+
 .hidden { display:none; }
 .error { color:#ffb3b3; margin-top:10px; }
 
-.highlight { font-size:1.8rem; color:#ffd479; font-weight:bold; }
-.voucher-box { border:2px dashed #ffffffaa; border-radius:15px; padding:20px; margin:20px 0; background:rgba(0,0,0,0.25); }
+.highlight {
+  font-size:1.8rem;
+  color:#ffd479;
+  font-weight:bold;
+}
 
-.confetti { position:fixed; top:-10px; width:10px; height:10px; animation:fall 3s linear forwards; z-index:9999; }
-@keyframes fall { to { transform:translateY(110vh) rotate(360deg); opacity:0; } }
+.voucher-box {
+  border:2px dashed #ffffffaa;
+  border-radius:15px;
+  padding:20px;
+  margin:20px 0;
+  background:rgba(0,0,0,0.25);
+}
+
+.confetti {
+  position:fixed;
+  top:-10px;
+  width:10px;
+  height:10px;
+  animation:fall 3s linear forwards;
+  z-index:9999;
+}
+@keyframes fall {
+  to { transform:translateY(110vh) rotate(360deg); opacity:0; }
+}
 
 /* TIC TAC TOE */
-#ttt { display:grid; grid-template-columns:repeat(3,90px); gap:10px; justify-content:center; margin:20px auto; }
+#ttt {
+  display:grid;
+  grid-template-columns:repeat(3,90px);
+  gap:10px;
+  justify-content:center;
+  margin:20px auto;
+}
 .cell {
-  height:90px; font-size:3rem;
+  height:90px;
+  font-size:3rem;
   background:rgba(255,255,255,0.15);
   border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   cursor:pointer;
 }
 
-/* SEQUENZ-SPIEL */
+/* SEQUENZ */
 #seqGrid {
   display:grid;
   grid-template-columns:repeat(3,80px);
@@ -47,28 +106,50 @@ button { margin-top:15px; padding:12px 28px; font-size:1rem; border:none; border
 .seq-cell.active { background:#ffd479; }
 
 /* MEMORY */
-#memory { display:grid; grid-template-columns:repeat(3,90px); gap:12px; justify-content:center; margin:20px auto; }
+#memory {
+  display:grid;
+  grid-template-columns:repeat(3,90px);
+  gap:12px;
+  justify-content:center;
+  margin:20px auto;
+}
 .card-m {
-  height:90px; font-size:2rem;
+  height:90px;
+  font-size:2rem;
   background:rgba(255,255,255,0.15);
   border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   cursor:pointer;
 }
 
-img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
+img.voucher-image {
+  max-width:80%;
+  border-radius:15px;
+  margin-bottom:15px;
+}
 </style>
 </head>
-<body>
 
-<div class="container"><div class="card"><div class="content">
+<body>
+<div class="container">
+<div class="card">
+<div class="content">
 
 <!-- WISSEN -->
 <div id="riddle">
 <h1>🧠 Geburtstagsrätsel</h1>
-<p>🌍 Größte Stadt der Welt (nach Einwohnern)?</p><input id="q1"><br><br>
-<p>🗺️ Größte Stadt der Welt (nach Fläche)?</p><input id="q2"><br><br>
-<p>☢️ Datum des Atombombenabwurfs auf Hiroshima?</p><input id="q3"><br>
+
+<p>🌍 Größte Stadt der Welt (nach Einwohnern)?</p>
+<input id="q1"><br><br>
+
+<p>🗺️ Größte Stadt der Welt (nach Fläche)?</p>
+<input id="q2"><br><br>
+
+<p>☢️ Datum des Atombombenabwurfs auf Hiroshima?</p>
+<input id="q3"><br>
+
 <button onclick="checkRiddle()">Antworten prüfen</button>
 <div class="error hidden" id="riddleError">❌ Leider falsch</div>
 </div>
@@ -82,7 +163,7 @@ img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 <button id="restartTTT" class="hidden" onclick="initTTT()">🔁 Nochmal spielen</button>
 </div>
 
-<!-- NEUES SPIEL -->
+<!-- SEQUENZ -->
 <div id="sequenceGame" class="hidden">
 <h1>🔢 Merk dir die Reihenfolge</h1>
 <p>Merke dir die 3 Felder und klicke sie danach in der gleichen Reihenfolge.</p>
@@ -104,187 +185,233 @@ img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 <div id="voucher" class="hidden">
 <h1>🎉 Alles Gute zum 50. Geburtstag! 🎉</h1>
 <h2>Lieber Papa</h2>
+
 <img src="bild.jpeg" class="voucher-image">
+
 <div class="voucher-box">
 <p>Zu deinem Geburtstag bekommst du:</p>
 <div class="highlight">🧳 EINEN NEUEN REISEKOFFER 🧳</div>
 </div>
-<p>Mit ganz viel Liebe 💙<br><strong>Jonas, Emilia, Emely und Moritz</strong></p>
+
+<p>Mit ganz viel Liebe 💙<br>
+<strong>Jonas, Emilia, Emely und Moritz</strong></p>
 </div>
 
-</div></div></div>
+</div>
+</div>
+</div>
 
 <script>
+// ===================== ELEMENTE =====================
+const q1 = document.getElementById("q1");
+const q2 = document.getElementById("q2");
+const q3 = document.getElementById("q3");
+
+const riddle = document.getElementById("riddle");
+const riddleError = document.getElementById("riddleError");
+const game = document.getElementById("game");
+const gameError = document.getElementById("gameError");
+const restartTTT = document.getElementById("restartTTT");
+const sequenceGame = document.getElementById("sequenceGame");
+const seqGrid = document.getElementById("seqGrid");
+const seqError = document.getElementById("seqError");
+const memoryGame = document.getElementById("memoryGame");
+const memory = document.getElementById("memory");
+const unlock = document.getElementById("unlock");
+const voucher = document.getElementById("voucher");
+
 // ===================== WISSEN =====================
-function n(t){return t.toLowerCase().trim();}
+function n(t){ return t.toLowerCase().trim(); }
+
 function checkRiddle(){
-if(n(q1.value)=="tokio" && n(q2.value)=="chongqing" &&
-(n(q3.value)=="6. august 1945" || n(q3.value)=="06.08.1945")){
-riddle.classList.add("hidden");
-initTTT();
-game.classList.remove("hidden");
-}else riddleError.classList.remove("hidden");
+  if(
+    n(q1.value) === "tokio" &&
+    n(q2.value) === "chongqing" &&
+    (n(q3.value) === "6. august 1945" || n(q3.value) === "06.08.1945")
+  ){
+    riddle.classList.add("hidden");
+    initTTT();
+    game.classList.remove("hidden");
+  } else {
+    riddleError.classList.remove("hidden");
+  }
 }
 
 // ===================== TIC TAC TOE =====================
-let boardTTT=[], gameOver=false;
-const winLines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+let boardTTT = [];
+let gameOver = false;
+const winLines = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
 
 function initTTT(){
-ttt.innerHTML="";
-boardTTT=Array(9).fill("");
-gameOver=false;
-gameError.classList.add("hidden");
-restartTTT.classList.add("hidden");
-for(let i=0;i<9;i++){
-const c=document.createElement("div");
-c.className="cell";
-c.onclick=()=>playerMove(i,c);
-ttt.appendChild(c);
-}
+  ttt.innerHTML = "";
+  boardTTT = Array(9).fill("");
+  gameOver = false;
+  gameError.classList.add("hidden");
+  restartTTT.classList.add("hidden");
+
+  for(let i=0;i<9;i++){
+    const c = document.createElement("div");
+    c.className = "cell";
+    c.onclick = () => playerMove(i,c);
+    ttt.appendChild(c);
+  }
 }
 
 function playerMove(i,cell){
-if(boardTTT[i]||gameOver) return;
-boardTTT[i]="X"; cell.textContent="❌";
-if(checkWin("X")){
-game.classList.add("hidden");
-initSequence();
-sequenceGame.classList.remove("hidden");
-return;
-}
-if(boardTTT.every(v=>v)){
-gameError.textContent="Unentschieden!";
-gameError.classList.remove("hidden");
-restartTTT.classList.remove("hidden");
-gameOver=true; return;
-}
-setTimeout(computerMove,400);
+  if(boardTTT[i] || gameOver) return;
+  boardTTT[i] = "X";
+  cell.textContent = "❌";
+
+  if(checkWin("X")){
+    game.classList.add("hidden");
+    initSequence();
+    sequenceGame.classList.remove("hidden");
+    return;
+  }
+
+  if(boardTTT.every(v=>v)){
+    gameError.textContent = "Unentschieden!";
+    gameError.classList.remove("hidden");
+    restartTTT.classList.remove("hidden");
+    gameOver = true;
+    return;
+  }
+  setTimeout(computerMove,400);
 }
 
 function computerMove(){
-let empty=boardTTT.map((v,i)=>v==""?i:null).filter(v=>v!==null);
-let move=empty[Math.floor(Math.random()*empty.length)];
-boardTTT[move]="O";
-document.querySelectorAll(".cell")[move].textContent="⭕";
-if(checkWin("O")){
-gameError.textContent="Computer gewinnt 😈";
-gameError.classList.remove("hidden");
-restartTTT.classList.remove("hidden");
-gameOver=true;
-}
-}
-function checkWin(p){ return winLines.some(l=>l.every(i=>boardTTT[i]==p)); }
+  let empty = boardTTT.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+  let move = empty[Math.floor(Math.random()*empty.length)];
+  boardTTT[move] = "O";
+  document.querySelectorAll(".cell")[move].textContent = "⭕";
 
-// ===================== SEQUENZ-SPIEL =====================
-let sequence=[], userSeq=[], lockSeq=true;
+  if(checkWin("O")){
+    gameError.textContent = "Computer gewinnt 😈";
+    gameError.classList.remove("hidden");
+    restartTTT.classList.remove("hidden");
+    gameOver = true;
+  }
+}
+
+function checkWin(p){
+  return winLines.some(l => l.every(i => boardTTT[i] === p));
+}
+
+// ===================== SEQUENZ =====================
+let sequence = [];
+let userSeq = [];
+let lockSeq = true;
+
 function initSequence(){
-seqGrid.innerHTML="";
-sequence=[]; userSeq=[]; lockSeq=true;
-seqError.classList.add("hidden");
+  seqGrid.innerHTML = "";
+  sequence = [];
+  userSeq = [];
+  lockSeq = true;
+  seqError.classList.add("hidden");
 
-for(let i=0;i<9;i++){
-const d=document.createElement("div");
-d.className="seq-cell";
-d.onclick=()=>clickSeq(i);
-seqGrid.appendChild(d);
-}
+  for(let i=0;i<9;i++){
+    const d = document.createElement("div");
+    d.className = "seq-cell";
+    d.onclick = () => clickSeq(i);
+    seqGrid.appendChild(d);
+  }
 
-while(sequence.length<3){
-let r=Math.floor(Math.random()*9);
-if(!sequence.includes(r)) sequence.push(r);
-}
+  while(sequence.length < 3){
+    let r = Math.floor(Math.random()*9);
+    if(!sequence.includes(r)) sequence.push(r);
+  }
 
-sequence.forEach((i,idx)=>{
-setTimeout(()=>seqGrid.children[i].classList.add("active"),500+idx*700);
-setTimeout(()=>seqGrid.children[i].classList.remove("active"),900+idx*700);
-});
-setTimeout(()=>lockSeq=false,2600);
+  sequence.forEach((i,idx)=>{
+    setTimeout(()=>seqGrid.children[i].classList.add("active"),500+idx*700);
+    setTimeout(()=>seqGrid.children[i].classList.remove("active"),900+idx*700);
+  });
+
+  setTimeout(()=>lockSeq=false,2600);
 }
 
 function clickSeq(i){
-if(lockSeq) return;
-userSeq.push(i);
-if(userSeq[userSeq.length-1]!==sequence[userSeq.length-1]){
-seqError.classList.remove("hidden");
-return initSequence();
-}
-if(userSeq.length===sequence.length){
-sequenceGame.classList.add("hidden");
-initMemory();
-memoryGame.classList.remove("hidden");
-}
+  if(lockSeq) return;
+  userSeq.push(i);
+
+  if(userSeq[userSeq.length-1] !== sequence[userSeq.length-1]){
+    seqError.classList.remove("hidden");
+    return initSequence();
+  }
+
+  if(userSeq.length === sequence.length){
+    sequenceGame.classList.add("hidden");
+    initMemory();
+    memoryGame.classList.remove("hidden");
+  }
 }
 
 // ===================== MEMORY =====================
-let cards=["🧳","🧳","✈️","✈️","🌍","🌍"], first=null, lock=false, matched=0;
+let cards = ["🧳","🧳","✈️","✈️","🌍","🌍"];
+let first = null;
+let lock = false;
+let matched = 0;
+
 function initMemory(){
-memory.innerHTML=""; matched=0; first=null;
-cards.sort(()=>Math.random()-0.5);
-cards.forEach(sym=>{
-const c=document.createElement("div");
-c.className="card-m";
-c.onclick=()=>flip(c,sym);
-memory.appendChild(c);
-});
+  memory.innerHTML = "";
+  matched = 0;
+  first = null;
+  cards.sort(()=>Math.random()-0.5);
+
+  cards.forEach(sym=>{
+    const c = document.createElement("div");
+    c.className = "card-m";
+    c.onclick = ()=>flip(c,sym);
+    memory.appendChild(c);
+  });
 }
+
 function flip(card,sym){
-if(lock||card.textContent) return;
-card.textContent=sym;
-if(!first){ first={card,sym}; return; }
-lock=true;
-setTimeout(()=>{
-if(first.sym===sym){
-matched+=2;
-if(matched===6){
-memoryGame.classList.add("hidden");
-unlock.classList.remove("hidden");
-}
-}else{
-card.textContent="";
-first.card.textContent="";
-}
-first=null; lock=false;
-},700);
+  if(lock || card.textContent) return;
+  card.textContent = sym;
+
+  if(!first){
+    first = {card,sym};
+    return;
+  }
+
+  lock = true;
+  setTimeout(()=>{
+    if(first.sym === sym){
+      matched += 2;
+      if(matched === 6){
+        memoryGame.classList.add("hidden");
+        unlock.classList.remove("hidden");
+      }
+    } else {
+      card.textContent = "";
+      first.card.textContent = "";
+    }
+    first = null;
+    lock = false;
+  },700);
 }
 
 // ===================== GUTSCHEIN =====================
 function showVoucher(){
-unlock.classList.add("hidden");
-voucher.classList.remove("hidden");
-launchConfetti();
+  unlock.classList.add("hidden");
+  voucher.classList.remove("hidden");
+  launchConfetti();
 }
+
 function launchConfetti(){
-for(let i=0;i<120;i++){
-const c=document.createElement("div");
-c.className="confetti";
-c.style.left=Math.random()*100+"vw";
-c.style.backgroundColor=`hsl(${Math.random()*360},80%,60%)`;
-document.body.appendChild(c);
-setTimeout(()=>c.remove(),4000);
+  for(let i=0;i<120;i++){
+    const c = document.createElement("div");
+    c.className = "confetti";
+    c.style.left = Math.random()*100 + "vw";
+    c.style.backgroundColor = `hsl(${Math.random()*360},80%,60%)`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
 }
-}
-
-// ===================== ELEMENTE =====================
-const q1=q2=q3=null;
-const q1e=document.getElementById("q1"),
-q2e=document.getElementById("q2"),
-q3e=document.getElementById("q3");
-const q1=q1e,q2=q2e,q3=q3e;
-
-const riddle=document.getElementById("riddle"),
-riddleError=document.getElementById("riddleError"),
-game=document.getElementById("game"),
-gameError=document.getElementById("gameError"),
-restartTTT=document.getElementById("restartTTT"),
-sequenceGame=document.getElementById("sequenceGame"),
-seqGrid=document.getElementById("seqGrid"),
-seqError=document.getElementById("seqError"),
-memoryGame=document.getElementById("memoryGame"),
-memory=document.getElementById("memory"),
-unlock=document.getElementById("unlock"),
-voucher=document.getElementById("voucher");
 </script>
-
 </body>
 </html>
