@@ -9,26 +9,36 @@ body { margin:0; font-family:"Segoe UI",Arial,sans-serif; background:linear-grad
 .container { max-width:900px; margin:auto; padding:20px; }
 .card { background: rgba(255,255,255,0.08); border-radius:20px; box-shadow:0 20px 40px rgba(0,0,0,0.4); overflow:hidden; }
 .content { padding:20px; text-align:center; }
-input { padding:10px; border-radius:8px; border:none; width:90%; max-width:220px; font-size:1rem; }
+input { padding:10px; border-radius:8px; border:none; width:90%; max-width:260px; font-size:1rem; }
 button { margin-top:20px; padding:12px 28px; font-size:1rem; border:none; border-radius:30px; cursor:pointer; background:#ffd479; color:#1a2a33; font-weight:bold; }
 .hidden { display:none; }
 .error { color:#ffb3b3; margin-top:10px; }
 
 .voucher-box { border:2px dashed #ffffffaa; border-radius:15px; padding:20px; margin:20px 0; background:rgba(0,0,0,0.25); }
 .highlight { font-size:1.8rem; color:#ffd479; font-weight:bold; }
+
 .confetti { position:fixed; top:-10px; width:10px; height:10px; animation:fall 3s linear forwards; z-index:9999; }
 @keyframes fall { to { transform:translateY(110vh) rotate(360deg); opacity:0; } }
 
-#chessboard { display:grid; grid-template-columns:repeat(8,1fr); grid-template-rows:repeat(8,1fr); gap:0; margin:15px auto; max-width:90vw; }
-.square { width:100%; padding-top:100%; position:relative; display:flex; align-items:center; justify-content:center; font-size:calc(12px + 3vw); cursor:pointer; }
-.square.light { background-color:#eee; color:#000; }
-.square.dark { background-color:#555; color:#fff; }
-.square span { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
-.selected { outline:3px solid yellow; }
+/* TIC TAC TOE */
+#ttt { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; max-width:300px; margin:20px auto; }
+.cell {
+    background:rgba(255,255,255,0.15);
+    border-radius:12px;
+    font-size:3rem;
+    height:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
 
 img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 
-@media(max-width:500px){ .highlight{font-size:1.5rem;} button{font-size:0.95rem;padding:10px 24px;} }
+@media(max-width:500px){
+.highlight{font-size:1.5rem;}
+button{font-size:0.95rem;padding:10px 24px;}
+}
 </style>
 </head>
 <body>
@@ -37,19 +47,26 @@ img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 <!-- RÄTSEL -->
 <div id="riddle">
 <h1>🧠 Geburtstagsrätsel</h1>
-<p>🇧🇫 Hauptstadt von Burkina Faso?</p><input id="q1"><br><br>
-<p>🇧🇳 Hauptstadt von Brunei?</p><input id="q2"><br><br>
-<p>🇹🇻 Hauptstadt von Tuvalu?</p><input id="q3"><br>
+
+<p>🌍 Größte Stadt der Welt (nach Einwohnern)?</p>
+<input id="q1"><br><br>
+
+<p>🗺️ Größte Stadt der Welt (nach Fläche)?</p>
+<input id="q2"><br><br>
+
+<p>☢️ Datum des Atombombenabwurfs auf Hiroshima?</p>
+<input id="q3"><br>
+
 <button onclick="checkRiddle()">Antworten prüfen</button>
 <div class="error hidden" id="riddleError">❌ Leider falsch</div>
 </div>
 
-<!-- SCHACH -->
-<div id="chess" class="hidden">
-<h1>♟️ Schachrätsel</h1>
-<p><strong>Weiß am Zug – Matt in 1!</strong></p>
-<div id="chessboard"></div>
-<div class="error hidden" id="chessError">❌ Kein Schachmatt!</div>
+<!-- TIC TAC TOE -->
+<div id="game" class="hidden">
+<h1>⭕ Tic-Tac-Toe</h1>
+<p><strong>Erreiche drei ❌ in einer Reihe!</strong></p>
+<div id="ttt"></div>
+<div class="error hidden" id="gameError">❌ Noch kein Gewinn!</div>
 </div>
 
 <!-- GUTSCHEIN BUTTON -->
@@ -76,66 +93,55 @@ img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 // ===================== RÄTSEL =====================
 function n(t){return t.toLowerCase().trim();}
 function checkRiddle(){
-if(n(q1.value)=="ouagadougou" && n(q2.value)=="bandar seri begawan" && n(q3.value)=="funafuti"){
-riddle.classList.add("hidden"); initChess(); chess.classList.remove("hidden");
+if(
+n(q1.value)=="tokio" &&
+n(q2.value)=="chongqing" &&
+(n(q3.value)=="6. august 1945" || n(q3.value)=="06.08.1945")
+){
+riddle.classList.add("hidden");
+initTTT();
+game.classList.remove("hidden");
 } else riddleError.classList.remove("hidden");
 }
 
-// ===================== SCHACH =====================
-let board=[], selected=null, selectedPiece=null;
-function initChess(){
-const chessboard=document.getElementById("chessboard");
-chessboard.innerHTML=""; board=[];
-const initial=[['','','','','','','',''],
-               ['','','','','','','',''],
-               ['','','','','','','',''],
-               ['','','','','','','',''],
-               ['','','','','','','',''],
-               ['','','','','','','',''],
-               ['','','','','','','',''],
-               ['','','','♔','','','','♕']];
-initial[0][6]='♚'; // Schwarz König
-for(let r=0;r<8;r++){
-    for(let c=0;c<8;c++){
-        const sq=document.createElement("div");
-        sq.className="square "+((r+c)%2==0?"light":"dark");
-        sq.dataset.row=r; sq.dataset.col=c;
-        const span=document.createElement("span");
-        span.textContent=initial[r][c];
-        sq.appendChild(span);
-        sq.addEventListener('click',()=>clickSquare(sq));
-        chessboard.appendChild(sq);
-        board.push(sq);
-    }
-}}
-function clickSquare(sq){
-const piece=sq.querySelector('span').textContent;
-if(selected){
-    // Zug ausführen
-    sq.querySelector('span').textContent=selectedPiece;
-    selected.querySelector('span').textContent='';
-    selected.classList.remove('selected');
-    selected=null;
-    selectedPiece=null;
-    checkMate();
-}else if(piece==='♔'||piece==='♕'){
-    selected=sq; selectedPiece=piece; sq.classList.add('selected');
-}}
-function checkMate(){
-let correct=false;
-board.forEach(sq=>{
-    const span=sq.querySelector('span');
-    if(span.textContent==='♕' && sq.dataset.row=='1' && sq.dataset.col=='7') correct=true;
-});
-if(correct){ chess.classList.add('hidden'); unlock.classList.remove('hidden'); } 
-else chessError.classList.remove('hidden');
+// ===================== TIC TAC TOE =====================
+let board=[];
+function initTTT(){
+const ttt=document.getElementById("ttt");
+ttt.innerHTML="";
+board=Array(9).fill("");
+for(let i=0;i<9;i++){
+const c=document.createElement("div");
+c.className="cell";
+c.onclick=()=>move(i,c);
+ttt.appendChild(c);
+}
+}
+
+function move(i,c){
+if(board[i]) return;
+board[i]="X";
+c.textContent="❌";
+if(checkWin()){
+game.classList.add("hidden");
+unlock.classList.remove("hidden");
+} else gameError.classList.remove("hidden");
+}
+
+function checkWin(){
+const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+return w.some(p=>p.every(i=>board[i]=="X"));
 }
 
 // ===================== GUTSCHEIN =====================
-function showVoucher(){ unlock.classList.add('hidden'); voucher.classList.remove('hidden'); launchConfetti(); }
+function showVoucher(){
+unlock.classList.add("hidden");
+voucher.classList.remove("hidden");
+launchConfetti();
+}
 
 // ===================== KONFETTI =====================
-function launchConfetti(){ 
+function launchConfetti(){
 for(let i=0;i<120;i++){
 const c=document.createElement("div");
 c.className="confetti";
@@ -151,8 +157,8 @@ const q1=document.getElementById("q1"),
       q3=document.getElementById("q3"),
       riddle=document.getElementById("riddle"),
       riddleError=document.getElementById("riddleError"),
-      chess=document.getElementById("chess"),
-      chessError=document.getElementById("chessError"),
+      game=document.getElementById("game"),
+      gameError=document.getElementById("gameError"),
       unlock=document.getElementById("unlock"),
       voucher=document.getElementById("voucher");
 </script>
