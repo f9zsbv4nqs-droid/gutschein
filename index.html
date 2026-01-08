@@ -49,6 +49,7 @@ img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 </style>
 </head>
 <body>
+
 <div class="container"><div class="card"><div class="content">
 
 <!-- WISSEN -->
@@ -67,6 +68,7 @@ img.voucher-image { max-width:80%; border-radius:15px; margin-bottom:15px; }
 <p>Du spielst ❌ – besiege den Computer ⭕</p>
 <div id="ttt"></div>
 <div class="error hidden" id="gameError"></div>
+<button id="restartTTT" class="hidden" onclick="initTTT()">🔁 Nochmal spielen</button>
 </div>
 
 <!-- RICHTUNGS-SPIEL -->
@@ -122,40 +124,61 @@ let boardTTT=[], gameOver=false;
 const winLines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
 function initTTT(){
-ttt.innerHTML=""; boardTTT=Array(9).fill(""); gameOver=false;
+ttt.innerHTML="";
+boardTTT=Array(9).fill("");
+gameOver=false;
 gameError.classList.add("hidden");
+restartTTT.classList.add("hidden");
+
 for(let i=0;i<9;i++){
 const c=document.createElement("div");
-c.className="cell"; c.onclick=()=>playerMove(i,c);
+c.className="cell";
+c.onclick=()=>playerMove(i,c);
 ttt.appendChild(c);
-}}
+}
+}
 
 function playerMove(i,cell){
-if(boardTTT[i]||gameOver) return;
-boardTTT[i]="X"; cell.textContent="❌";
-if(checkWin("X")){ game.classList.add("hidden"); initPath(); path.classList.remove("hidden"); return; }
-if(boardTTT.every(v=>v)){ gameError.textContent="Unentschieden!"; gameError.classList.remove("hidden"); return; }
+if(boardTTT[i] || gameOver) return;
+boardTTT[i]="X";
+cell.textContent="❌";
+
+if(checkWin("X")){
+game.classList.add("hidden");
+initPath();
+path.classList.remove("hidden");
+return;
+}
+
+if(boardTTT.every(v=>v)){
+gameError.textContent="Unentschieden!";
+gameError.classList.remove("hidden");
+restartTTT.classList.remove("hidden");
+gameOver=true;
+return;
+}
+
 setTimeout(computerMove,400);
 }
 
 function computerMove(){
-let move = smartMove();
+let move=smartMove();
 boardTTT[move]="O";
 document.querySelectorAll(".cell")[move].textContent="⭕";
-if(checkWin("O")){ gameError.textContent="Computer gewinnt 😈"; gameError.classList.remove("hidden"); gameOver=true; }
+
+if(checkWin("O")){
+gameError.textContent="Computer gewinnt 😈";
+gameError.classList.remove("hidden");
+restartTTT.classList.remove("hidden");
+gameOver=true;
+}
 }
 
 function smartMove(){
 let empty=boardTTT.map((v,i)=>v==""?i:null).filter(v=>v!==null);
-
-// 20% Zufall → gewinnbar
 if(Math.random()<0.2) return empty[Math.floor(Math.random()*empty.length)];
-
-// Gewinnen
 for(let i of empty){ boardTTT[i]="O"; if(checkWin("O")){ boardTTT[i]=""; return i;} boardTTT[i]=""; }
-// Blockieren
 for(let i of empty){ boardTTT[i]="X"; if(checkWin("X")){ boardTTT[i]=""; return i;} boardTTT[i]=""; }
-// Mitte
 if(empty.includes(4)) return 4;
 return empty[Math.floor(Math.random()*empty.length)];
 }
@@ -168,9 +191,11 @@ function initPath(){
 grid.innerHTML=""; pos=4; moves=[];
 for(let i=0;i<9;i++){
 const d=document.createElement("div");
-d.className="grid-cell"; if(i===4) d.classList.add("active");
+d.className="grid-cell";
+if(i===4) d.classList.add("active");
 grid.appendChild(d);
-}}
+}
+}
 
 function move(dir){
 moves.push(dir);
@@ -182,9 +207,13 @@ if(moves.length===solution.length){
 JSON.stringify(moves)==JSON.stringify(solution)
 ?(path.classList.add("hidden"),initMemory(),memoryGame.classList.remove("hidden"))
 :resetPath();
-}}
+}
+}
 
-function updateGrid(){ [...grid.children].forEach(c=>c.classList.remove("active")); grid.children[pos].classList.add("active"); }
+function updateGrid(){
+[...grid.children].forEach(c=>c.classList.remove("active"));
+grid.children[pos].classList.add("active");
+}
 function resetPath(){ pathError.classList.remove("hidden"); initPath(); }
 
 // ===================== MEMORY =====================
@@ -194,7 +223,8 @@ memory.innerHTML=""; matched=0; first=null;
 cards.sort(()=>Math.random()-0.5);
 cards.forEach(sym=>{
 const c=document.createElement("div");
-c.className="card-m"; c.onclick=()=>flip(c,sym);
+c.className="card-m";
+c.onclick=()=>flip(c,sym);
 memory.appendChild(c);
 });
 }
@@ -204,24 +234,47 @@ card.textContent=sym;
 if(!first){ first={card,sym}; return; }
 lock=true;
 setTimeout(()=>{
-if(first.sym===sym){ matched+=2; if(matched===6){ memoryGame.classList.add("hidden"); unlock.classList.remove("hidden"); } }
-else{ card.textContent=""; first.card.textContent=""; }
+if(first.sym===sym){
+matched+=2;
+if(matched===6){
+memoryGame.classList.add("hidden");
+unlock.classList.remove("hidden");
+}
+}else{
+card.textContent="";
+first.card.textContent="";
+}
 first=null; lock=false;
 },700);
 }
 
 // ===================== GUTSCHEIN =====================
-function showVoucher(){ unlock.classList.add("hidden"); voucher.classList.remove("hidden"); launchConfetti(); }
-function launchConfetti(){ for(let i=0;i<120;i++){ const c=document.createElement("div"); c.className="confetti"; c.style.left=Math.random()*100+"vw"; c.style.backgroundColor=`hsl(${Math.random()*360},80%,60%)`; document.body.appendChild(c); setTimeout(()=>c.remove(),4000); }}
+function showVoucher(){
+unlock.classList.add("hidden");
+voucher.classList.remove("hidden");
+launchConfetti();
+}
+function launchConfetti(){
+for(let i=0;i<120;i++){
+const c=document.createElement("div");
+c.className="confetti";
+c.style.left=Math.random()*100+"vw";
+c.style.backgroundColor=`hsl(${Math.random()*360},80%,60%)`;
+document.body.appendChild(c);
+setTimeout(()=>c.remove(),4000);
+}
+}
 
 // ===================== ELEMENTE =====================
 const q1=document.getElementById("q1"), q2=document.getElementById("q2"), q3=document.getElementById("q3"),
 riddle=document.getElementById("riddle"), riddleError=document.getElementById("riddleError"),
 game=document.getElementById("game"), gameError=document.getElementById("gameError"),
+restartTTT=document.getElementById("restartTTT"),
 path=document.getElementById("path"), pathError=document.getElementById("pathError"),
 grid=document.getElementById("grid"),
 memoryGame=document.getElementById("memoryGame"), memory=document.getElementById("memory"),
 unlock=document.getElementById("unlock"), voucher=document.getElementById("voucher");
 </script>
+
 </body>
 </html>
